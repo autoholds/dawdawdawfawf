@@ -849,6 +849,20 @@
             document.title = marqueeText;
         }, 300);
 
+        // Security: Disable DevTools and Right-Click
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        document.onkeydown = (e) => {
+            // Block F12
+            if (e.keyCode === 123) return false;
+
+            // Block Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C (Elements)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
+
+            // Block Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) return false;
+        };
+
         // Views Counter
         let counter = parseInt(localStorage.getItem('orb_views') || '1434') + 1;
         localStorage.setItem('orb_views', counter);
