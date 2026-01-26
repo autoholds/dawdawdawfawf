@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Orbital</title>
+    <title>@Orbital | Bio</title>
     <meta name="description" content="Orbital - Premium Bio Link">
     <meta name="theme-color" content="#000000">
-    <link rel="icon" href="https://img.icons8.com/isometric/50/orbit.png">
+
 
     <!-- Google Fonts -->
     <link
@@ -817,8 +817,40 @@
         fetchDiscordPresence();
         setInterval(fetchDiscordPresence, 15000);
 
+        // Dynamic Title Effect
+        let titleIdx = 0;
+        const titles = ["@Orbital", "Orbital Project", "S t r a t u p", "Closed Session"];
+
+        function updateTitle() {
+            let currentTitle = titles[titleIdx];
+            let charIdx = 0;
+            let forward = true;
+
+            const interval = setInterval(() => {
+                if (forward) {
+                    document.title = currentTitle.substring(0, charIdx + 1);
+                    charIdx++;
+                    if (charIdx === currentTitle.length) {
+                        forward = false;
+                        clearInterval(interval);
+                        setTimeout(updateTitle, 2000); // Wait 2s before deleting
+                    }
+                }
+            }, 150);
+
+            // Move to next message for next call
+            titleIdx = (titleIdx + 1) % titles.length;
+        }
+
+        // Alternative: Simple sliding marquee title
+        let marqueeText = "Discord.gg/ICMP - Orbital - ";
+        setInterval(() => {
+            marqueeText = marqueeText.substring(1) + marqueeText.substring(0, 1);
+            document.title = marqueeText;
+        }, 300);
+
         // Views Counter
-        let counter = parseInt(localStorage.getItem('orb_views') || '1,434') + 1;
+        let counter = parseInt(localStorage.getItem('orb_views') || '1434') + 1;
         localStorage.setItem('orb_views', counter);
         document.getElementById('views-val').textContent = counter.toLocaleString();
     </script>
