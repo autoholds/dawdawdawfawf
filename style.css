@@ -76,45 +76,68 @@ body {
     40% { transform: translate(2%, 2%) }
 }
 
-/* --- Love Badge (Soft & Romantic) --- */
-.love-badge {
+/* --- Header Tags (Professional Badges) --- */
+.header-tags {
     position: absolute;
-    top: 25px;
-    right: 25px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 6px 14px;
-    border-radius: 50px;
+    top: 20px;
+    right: 20px;
     display: flex;
-    align-items: center;
     gap: 8px;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    transition: 0.3s ease;
-    cursor: default;
     z-index: 10;
 }
 
-.love-badge:hover {
-    background: rgba(255, 182, 193, 0.1);
-    border-color: rgba(255, 182, 193, 0.3);
-    transform: translateY(-2px);
+.tag-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: default;
 }
 
-.pulse-heart {
+.tag-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* Love Badge Styling */
+.tag-item.love {
+    border-color: rgba(255, 94, 120, 0.15);
+}
+
+.tag-item.love:hover {
+    border-color: rgba(255, 94, 120, 0.5);
+    box-shadow: 0 5px 15px rgba(255, 94, 120, 0.15);
+}
+
+.tag-item.love i {
     color: #ff5e78;
     font-size: 0.7rem;
-    animation: heartbeat 1.5s infinite ease-in-out;
+    animation: heartbeat 2s infinite ease-in-out;
 }
 
-@keyframes heartbeat {
-    0% { transform: scale(1); }
-    15% { transform: scale(1.3); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.3); }
-    60% { transform: scale(1); }
-    100% { transform: scale(1); }
+/* Friend Badge Styling */
+.tag-item.friend {
+    border-color: rgba(255, 215, 0, 0.15);
+}
+
+.tag-item.friend:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.15);
+}
+
+.tag-item.friend i {
+    color: #ffd700;
+    font-size: 0.7rem;
 }
 
 /* --- Entry Screen --- */
