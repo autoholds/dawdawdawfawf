@@ -100,7 +100,8 @@ let currentX = 0;
 let currentY = 0;
 let rotationX = 0;
 let rotationY = 0;
-let baseRotationY = 0; // Tracks the "home" position (0 or 180)
+let baseRotationY = 0; // Tracks the "home" position (0, 180, -180)
+let currentProfile = 'orbital'; // orbital, body, hm
 
 // Mouse Events for Dragging
 document.addEventListener('mousedown', (e) => {
@@ -131,6 +132,29 @@ document.addEventListener('mousemove', (e) => {
         // Clamp X rotation to avoid flipping upside down too much
         rotationX = Math.max(-60, Math.min(60, rotationX));
 
+        // Determine content based on rotationY
+        // Normalized angle to -180...180 range roughly
+        let angle = rotationY % 360;
+        
+        // Logic:
+        // 0 -> Front (Orbital)
+        // > 90 (Right Flip) -> HM
+        // < -90 (Left Flip) -> Body
+        
+        if (angle > 90 && angle < 270) {
+            if (currentProfile !== 'hm') {
+                setBackProfile('hm');
+                currentProfile = 'hm';
+            }
+        } else if (angle < -90 && angle > -270) {
+            if (currentProfile !== 'body') {
+                setBackProfile('body');
+                currentProfile = 'body';
+            }
+        } else {
+            currentProfile = 'orbital';
+        }
+
         // Apply transform
         cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
         
@@ -155,8 +179,30 @@ document.addEventListener('mouseup', () => {
         isDragging = false;
         root.style.cursor = 'default';
         
-        // Snap back to base rotation (0 or 180)
-        rotationY = baseRotationY;
+        // Smart Snap Logic
+        // Find closest snap point: 0, 180 (HM), -180 (Body)
+        let snapY = 0;
+        let angle = rotationY % 360;
+
+        if (angle > 90 && angle < 270) {
+            snapY = 180; // Snap to HM
+            baseRotationY = 180;
+            if (currentProfile !== 'hm') setBackProfile('hm');
+        } else if (angle < -90 && angle > -270) {
+            snapY = -180; // Snap to Body
+            baseRotationY = -180;
+            if (currentProfile !== 'body') setBackProfile('body');
+        } else {
+            snapY = 0; // Snap to Front
+            baseRotationY = 0;
+        }
+
+        // Adjust rotationY to be continuous but snap to the visual target
+        // We want the closest multiple of 360 + snap offset
+        const cycle = Math.round(rotationY / 360);
+        rotationY = (cycle * 360) + snapY;
+
+        // Reset X tilt
         rotationX = 0;
 
         // Re-enable smooth transition for snaps/buttons
@@ -173,7 +219,7 @@ document.addEventListener('mouseleave', () => {
         isDragging = false;
         root.style.cursor = 'default';
         
-        // Snap back
+        // Snap back to baseRotationY
         rotationY = baseRotationY;
         rotationX = 0;
 
@@ -337,17 +383,15 @@ function setBackProfile(key) {
  }
  
  function flipToBack() {
-    // Determine closest 180deg multiple
-    // We want to flip to the "back" side relative to current rotation
-    // If current rotationY is near 0, go to 180.
-    // If near 360, go to 540 (which is effectively 180).
-    // Let's just animate to rotationY + 180 if we are on front?
+    // This is called by buttons only
+    // If we click HM, go to 180
+    // If we click Body, go to -180? Or just 180 with content change?
     
-    // Simplification: Set rotationY to 180
-    baseRotationY = 180;
-    rotationY = 180;
-    rotationX = 0;
-    cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
+    // To be consistent with drag logic:
+    // HM -> Positive Rotation (180)
+    // Body -> Negative Rotation (-180)
+    
+    // Logic is handled in button listeners below now
  }
 
  function flipToFront() {
@@ -360,13 +404,21 @@ function setBackProfile(key) {
  btnBody.addEventListener('click', (e) => {
      e.stopPropagation(); 
      setBackProfile('body');
-     flipToBack();
+     // Animate to -180 (Left Spin)
+     baseRotationY = -180;
+     rotationY = -180;
+     rotationX = 0;
+     cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
  });
  
  btnHm.addEventListener('click', (e) => {
      e.stopPropagation();
      setBackProfile('hm');
-     flipToBack();
+     // Animate to 180 (Right Spin)
+     baseRotationY = 180;
+     rotationY = 180;
+     rotationX = 0;
+     cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
  });
  
  btnBack.addEventListener('click', (e) => {
