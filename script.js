@@ -333,19 +333,26 @@ const backBio = document.getElementById('back-bio');
 
 // Profile Data
 const PROFILES = {
+    orbital: {
+        name: "Orbital",
+        role: "Profile View",
+        bio: "Select a profile to view details.",
+        color: "rgba(255, 255, 255, 0.1)",
+        avatar: "https://i.imgur.com/6Xy1F5a.png" // Fallback or transparent
+    },
     body: {
         name: "Body",
-        role: "My Love",
-        avatar: "https://i.pinimg.com/736x/8e/4a/1c/8e4a1c0d5d5d8e2d4d0d0d0d0d0d0d0d.jpg", // Placeholder
-        bio: "The only one who owns my heart. Forever and always.",
-        color: "#ff5e78" // Heart color
+        role: "The Heart",
+        bio: "Passionate and full of life. Always there to support and love.",
+        color: "rgba(255, 50, 50, 0.2)",
+        avatar: "https://i.pinimg.com/736x/c0/27/7f/c0277f9d0c26804820d91a1346387877.jpg" // Romantic/Red aesthetic
     },
     hm: {
         name: "HM",
-        role: "Best Friend",
-        avatar: "https://i.pinimg.com/736x/2a/3b/4c/2a3b4c5d6e7f8g9h0i1j2k3l4m5n6o7.jpg", // Placeholder
-        bio: "Real ones stay. Loyalty over everything.",
-        color: "#ffd700" // Gold color
+        role: "The Crown",
+        bio: "Loyal friend and a true king. Standing strong together.",
+        color: "rgba(255, 215, 0, 0.2)",
+        avatar: "https://i.pinimg.com/736x/89/90/48/899048ab0cc455154006fdb9623dcb63.jpg" // Gold/Crown aesthetic
     }
 };
 
@@ -356,31 +363,38 @@ function setBackProfile(key) {
     const data = PROFILES[key];
     if (!data) return;
 
-    // Update Content
+    // Update Content with animation
+    // We can add a fade effect here if needed, but simple replacement is fine for now
     backName.textContent = data.name;
     backRole.textContent = data.role;
     backBio.textContent = data.bio;
     
-    // Style adjustments
-    backRole.style.borderColor = data.color;
-    backRole.style.color = data.color;
-    backRole.style.boxShadow = `0 0 10px ${data.color}40`;
-
-    // Avatar
+    // Update Avatar
     // Use a solid color or gradient if no image, or generic
-    backAvatar.style.backgroundImage = `url('${GENERIC_AVATAR}')`; 
-    // If you have real URLs, uncomment below:
-    // backAvatar.style.backgroundImage = `url('${data.avatar}')`;
+    backAvatar.style.backgroundImage = `url('${data.avatar}')`;
+    // Add error handling for image
+    const img = new Image();
+    img.src = data.avatar;
+    img.onerror = () => {
+        backAvatar.style.backgroundImage = `linear-gradient(135deg, ${data.color}, #000)`;
+    };
     
-    // For now, let's use a colored placeholder based on role
-    if(key === 'body') {
-         backAvatar.style.backgroundImage = "url('https://i.pinimg.com/564x/f3/d3/f0/f3d3f0a0a0a0a0a0a0a0a0a0a0a0a0a0.jpg')"; // Romantic vibe
+    // Update Theme Colors (optional)
+    const cardBack = document.querySelector('.card-face.back');
+    if (key === 'body') {
+        cardBack.style.background = 'rgba(20, 0, 0, 0.85)';
+        cardBack.style.borderColor = 'rgba(255, 50, 50, 0.3)';
+        backAvatar.style.boxShadow = '0 0 20px rgba(255, 50, 50, 0.4)';
+    } else if (key === 'hm') {
+        cardBack.style.background = 'rgba(20, 15, 0, 0.85)';
+        cardBack.style.borderColor = 'rgba(255, 215, 0, 0.3)';
+        backAvatar.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.4)';
     } else {
-         backAvatar.style.backgroundImage = "url('https://i.pinimg.com/564x/1a/2b/3c/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6.jpg')"; // Dark/Cool vibe
+        cardBack.style.background = 'rgba(10, 10, 10, 0.85)';
+        cardBack.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        backAvatar.style.boxShadow = 'none';
     }
-    // Since I don't have real URLs, I'll keep the main avatar style or use the color
-     backAvatar.style.border = `2px solid ${data.color}`;
- }
+}
  
  function flipToBack() {
     // This is called by buttons only
