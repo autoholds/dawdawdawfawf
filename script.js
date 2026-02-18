@@ -101,7 +101,7 @@ let currentY = 0;
 let rotationX = 0;
 let rotationY = 0;
 let baseRotationY = 0; // Tracks the "home" position (0, 180, -180)
-let currentProfile = 'orbital'; // orbital, body, hm
+let currentProfile = 'orbital'; // orbital, A, hm
 
 // Mouse Events for Dragging
 document.addEventListener('mousedown', (e) => {
@@ -139,7 +139,7 @@ document.addEventListener('mousemove', (e) => {
         // Logic:
         // 0 -> Front (Orbital)
         // > 90 (Right Flip) -> HM
-        // < -90 (Left Flip) -> Body
+        // < -90 (Left Flip) -> A
         
         if (angle > 90 && angle < 270) {
             if (currentProfile !== 'hm') {
@@ -147,9 +147,9 @@ document.addEventListener('mousemove', (e) => {
                 currentProfile = 'hm';
             }
         } else if (angle < -90 && angle > -270) {
-            if (currentProfile !== 'body') {
-                setBackProfile('body');
-                currentProfile = 'body';
+            if (currentProfile !== 'A') {
+                setBackProfile('A');
+                currentProfile = 'A';
             }
         } else {
             currentProfile = 'orbital';
@@ -180,7 +180,7 @@ document.addEventListener('mouseup', () => {
         root.style.cursor = 'default';
         
         // Smart Snap Logic
-        // Find closest snap point: 0, 180 (HM), -180 (Body)
+        // Find closest snap point: 0, 180 (HM), -180 (A)
         let snapY = 0;
         let angle = rotationY % 360;
 
@@ -189,9 +189,9 @@ document.addEventListener('mouseup', () => {
             baseRotationY = 180;
             if (currentProfile !== 'hm') setBackProfile('hm');
         } else if (angle < -90 && angle > -270) {
-            snapY = -180; // Snap to Body
+            snapY = -180; // Snap to A
             baseRotationY = -180;
-            if (currentProfile !== 'body') setBackProfile('body');
+            if (currentProfile !== 'A') setBackProfile('A');
         } else {
             snapY = 0; // Snap to Front
             baseRotationY = 0;
@@ -399,11 +399,11 @@ function setBackProfile(key) {
  function flipToBack() {
     // This is called by buttons only
     // If we click HM, go to 180
-    // If we click Body, go to -180? Or just 180 with content change?
+    // If we click body, go to -180? Or just 180 with content change?
     
     // To be consistent with drag logic:
     // HM -> Positive Rotation (180)
-    // Body -> Negative Rotation (-180)
+    // body -> Negative Rotation (-180)
     
     // Logic is handled in button listeners below now
  }
