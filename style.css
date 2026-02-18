@@ -203,11 +203,10 @@ body {
     width: 100%;
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Remove .is-flipped class reliance since we handle transform in JS */
 }
 
-.card-inner.is-flipped {
-    transform: rotateY(180deg);
-}
+/* Remove .card-inner.is-flipped block as it is handled by JS inline styles */
 
 .card-face {
     position: relative;
@@ -221,11 +220,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    overflow: hidden;
+    cursor: default; /* Default cursor */
+    user-select: none; /* Prevent text selection during drag */
 }
 
-.card-front {
+.card-face {
     z-index: 2;
     transform: rotateY(0deg);
 }

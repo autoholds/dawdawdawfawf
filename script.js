@@ -93,14 +93,79 @@ function runTyping() {
     setTimeout(runTyping, tick);
 }
 
-// 3D Tilt Effect
+// 3D Tilt & Drag Logic
+let isDragging = false;
+let startX, startY;
+let currentX = 0;
+let currentY = 0;
+let rotationX = 0;
+let rotationY = 0;
+
+// Mouse Events for Dragging
+document.addEventListener('mousedown', (e) => {
+    // Only drag if not clicking interactive elements
+    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.tag-item') || e.target.closest('.back-btn')) return;
+    
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    
+    // Disable transition for instant drag response
+    cardInner.style.transition = 'none';
+    cardTarget.style.transition = 'none';
+    root.style.cursor = 'grabbing';
+});
+
 document.addEventListener('mousemove', (e) => {
-    const box = root.getBoundingClientRect();
-    const centerX = box.left + box.width / 2;
-    const centerY = box.top + box.height / 2;
-    const angleX = (centerY - e.clientY) / 35;
-    const angleY = (e.clientX - centerX) / 35;
-    cardTarget.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+    if (isDragging) {
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+        
+        // Update rotation based on drag distance
+        // X axis rotation (tilt up/down) - limited
+        // Y axis rotation (spin left/right) - unlimited
+        rotationY += deltaX * 0.5; // Sensitivity
+        rotationX -= deltaY * 0.5; 
+        
+        // Clamp X rotation to avoid flipping upside down too much
+        rotationX = Math.max(-60, Math.min(60, rotationX));
+
+        // Apply transform
+        cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
+        
+        // Update start position for next frame
+        startX = e.clientX;
+        startY = e.clientY;
+    } else {
+        // Optional: Keep subtle tilt effect when not dragging
+        const box = root.getBoundingClientRect();
+        const centerX = box.left + box.width / 2;
+        const centerY = box.top + box.height / 2;
+        const tiltX = (centerY - e.clientY) / 50;
+        const tiltY = (e.clientX - centerX) / 50;
+        
+        // Apply tilt to outer card wrapper, while inner handles rotation
+        cardTarget.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isDragging) {
+        isDragging = false;
+        root.style.cursor = 'default';
+        
+        // Re-enable smooth transition for snaps/buttons
+        cardInner.style.transition = 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        cardTarget.style.transition = 'transform 0.1s';
+    }
+});
+
+document.addEventListener('mouseleave', () => {
+    if (isDragging) {
+        isDragging = false;
+        root.style.cursor = 'default';
+        cardInner.style.transition = 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    }
 });
 
 // Notifications
@@ -254,23 +319,42 @@ function setBackProfile(key) {
          backAvatar.style.backgroundImage = "url('https://i.pinimg.com/564x/1a/2b/3c/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6.jpg')"; // Dark/Cool vibe
     }
     // Since I don't have real URLs, I'll keep the main avatar style or use the color
-    backAvatar.style.border = `2px solid ${data.color}`;
-}
+     backAvatar.style.border = `2px solid ${data.color}`;
+ }
+ 
+ function flipToBack() {
+    // Determine closest 180deg multiple
+    // We want to flip to the "back" side relative to current rotation
+    // If current rotationY is near 0, go to 180.
+    // If near 360, go to 540 (which is effectively 180).
+    // Let's just animate to rotationY + 180 if we are on front?
+    
+    // Simplification: Set rotationY to 180
+    rotationY = 180;
+    rotationX = 0;
+    cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
+ }
 
-btnBody.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent tilt reset if needed
-    setBackProfile('body');
-    cardInner.classList.add('is-flipped');
-});
+ function flipToFront() {
+    rotationY = 0;
+    rotationX = 0;
+    cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
+ }
 
-btnHm.addEventListener('click', (e) => {
-    e.stopPropagation();
-    setBackProfile('hm');
-    cardInner.classList.add('is-flipped');
-});
-
-btnBack.addEventListener('click', (e) => {
-    e.stopPropagation();
-    cardInner.classList.remove('is-flipped');
-});
+ btnBody.addEventListener('click', (e) => {
+     e.stopPropagation(); 
+     setBackProfile('body');
+     flipToBack();
+ });
+ 
+ btnHm.addEventListener('click', (e) => {
+     e.stopPropagation();
+     setBackProfile('hm');
+     flipToBack();
+ });
+ 
+ btnBack.addEventListener('click', (e) => {
+     e.stopPropagation();
+     flipToFront();
+ });
 
