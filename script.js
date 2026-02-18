@@ -100,6 +100,7 @@ let currentX = 0;
 let currentY = 0;
 let rotationX = 0;
 let rotationY = 0;
+let baseRotationY = 0; // Tracks the "home" position (0 or 180)
 
 // Mouse Events for Dragging
 document.addEventListener('mousedown', (e) => {
@@ -154,9 +155,16 @@ document.addEventListener('mouseup', () => {
         isDragging = false;
         root.style.cursor = 'default';
         
+        // Snap back to base rotation (0 or 180)
+        rotationY = baseRotationY;
+        rotationX = 0;
+
         // Re-enable smooth transition for snaps/buttons
         cardInner.style.transition = 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         cardTarget.style.transition = 'transform 0.1s';
+        
+        // Apply snap
+        cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
     }
 });
 
@@ -164,7 +172,13 @@ document.addEventListener('mouseleave', () => {
     if (isDragging) {
         isDragging = false;
         root.style.cursor = 'default';
+        
+        // Snap back
+        rotationY = baseRotationY;
+        rotationX = 0;
+
         cardInner.style.transition = 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
     }
 });
 
@@ -330,12 +344,14 @@ function setBackProfile(key) {
     // Let's just animate to rotationY + 180 if we are on front?
     
     // Simplification: Set rotationY to 180
+    baseRotationY = 180;
     rotationY = 180;
     rotationX = 0;
     cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
  }
 
  function flipToFront() {
+    baseRotationY = 0;
     rotationY = 0;
     rotationX = 0;
     cardInner.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
