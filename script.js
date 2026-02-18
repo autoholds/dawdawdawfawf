@@ -189,3 +189,88 @@ document.onkeydown = (e) => {
 let counter = parseInt(localStorage.getItem('orb_views') || '1434') + 1;
 localStorage.setItem('orb_views', counter);
 document.getElementById('views-val').textContent = counter.toLocaleString();
+
+/* 
+   =========================================
+            FLIP CARD LOGIC
+   =========================================
+*/
+const cardInner = document.querySelector('.card-inner');
+const btnBody = document.getElementById('btn-body');
+const btnHm = document.getElementById('btn-hm');
+const btnBack = document.getElementById('btn-back');
+
+// Elements to update on back face
+const backAvatar = document.getElementById('back-avatar');
+const backName = document.getElementById('back-name');
+const backRole = document.getElementById('back-role');
+const backBio = document.getElementById('back-bio');
+
+// Profile Data
+const PROFILES = {
+    body: {
+        name: "Body",
+        role: "My Love",
+        avatar: "https://i.pinimg.com/736x/8e/4a/1c/8e4a1c0d5d5d8e2d4d0d0d0d0d0d0d0d.jpg", // Placeholder
+        bio: "The only one who owns my heart. Forever and always.",
+        color: "#ff5e78" // Heart color
+    },
+    hm: {
+        name: "HM",
+        role: "Best Friend",
+        avatar: "https://i.pinimg.com/736x/2a/3b/4c/2a3b4c5d6e7f8g9h0i1j2k3l4m5n6o7.jpg", // Placeholder
+        bio: "Real ones stay. Loyalty over everything.",
+        color: "#ffd700" // Gold color
+    }
+};
+
+// Generic placeholder if image fails
+const GENERIC_AVATAR = "https://cdn.discordapp.com/embed/avatars/0.png";
+
+function setBackProfile(key) {
+    const data = PROFILES[key];
+    if (!data) return;
+
+    // Update Content
+    backName.textContent = data.name;
+    backRole.textContent = data.role;
+    backBio.textContent = data.bio;
+    
+    // Style adjustments
+    backRole.style.borderColor = data.color;
+    backRole.style.color = data.color;
+    backRole.style.boxShadow = `0 0 10px ${data.color}40`;
+
+    // Avatar
+    // Use a solid color or gradient if no image, or generic
+    backAvatar.style.backgroundImage = `url('${GENERIC_AVATAR}')`; 
+    // If you have real URLs, uncomment below:
+    // backAvatar.style.backgroundImage = `url('${data.avatar}')`;
+    
+    // For now, let's use a colored placeholder based on role
+    if(key === 'body') {
+         backAvatar.style.backgroundImage = "url('https://i.pinimg.com/564x/f3/d3/f0/f3d3f0a0a0a0a0a0a0a0a0a0a0a0a0a0.jpg')"; // Romantic vibe
+    } else {
+         backAvatar.style.backgroundImage = "url('https://i.pinimg.com/564x/1a/2b/3c/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6.jpg')"; // Dark/Cool vibe
+    }
+    // Since I don't have real URLs, I'll keep the main avatar style or use the color
+    backAvatar.style.border = `2px solid ${data.color}`;
+}
+
+btnBody.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent tilt reset if needed
+    setBackProfile('body');
+    cardInner.classList.add('is-flipped');
+});
+
+btnHm.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setBackProfile('hm');
+    cardInner.classList.add('is-flipped');
+});
+
+btnBack.addEventListener('click', (e) => {
+    e.stopPropagation();
+    cardInner.classList.remove('is-flipped');
+});
+
